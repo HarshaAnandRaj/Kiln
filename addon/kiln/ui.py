@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) Kiln Contributors — see LICENSE-ADDON
 """Kiln Blender UI + connection state. Loaded only inside Blender."""
 from __future__ import annotations
 import queue

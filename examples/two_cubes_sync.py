@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (C) Kiln Contributors — see LICENSE-SERVER
 """Headless demo: two fake clients sync a cube move through the real protocol.
 
 Run: `kiln-server --port 8000` in one shell, then `python examples/two_cubes_sync.py`.

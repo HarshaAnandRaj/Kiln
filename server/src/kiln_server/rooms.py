@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (C) Kiln Contributors — see LICENSE-SERVER
 """Room state: authoritative seq, op log, locks, presence, comments, snapshot."""
 from __future__ import annotations
 import asyncio

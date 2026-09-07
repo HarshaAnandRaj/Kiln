@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) Kiln Contributors — see LICENSE-ADDON
 """diagn tests â€” headless (no Blender)."""
 import sys
 from pathlib import Path

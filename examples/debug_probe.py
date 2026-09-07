@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (C) Kiln Contributors � see LICENSE-SERVER
 """Headless debug probe: healthz → debug/rooms → WS hello/op/presence. No Blender needed.
 
 Usage: python examples/debug_probe.py [--server ws://127.0.0.1:8000] [--room demo]

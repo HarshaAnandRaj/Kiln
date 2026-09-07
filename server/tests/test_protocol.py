@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (C) Kiln Contributors — see LICENSE-SERVER
 """Protocol + room tests (no Blender needed)."""
 import json
 from fastapi.testclient import TestClient

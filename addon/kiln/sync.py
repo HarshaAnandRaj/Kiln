@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) Kiln Contributors � see LICENSE-ADDON
 """Scene scan → ops, ops → scene. bpy calls isolated in adapters so core is testable."""
 from __future__ import annotations
 from dataclasses import dataclass, field

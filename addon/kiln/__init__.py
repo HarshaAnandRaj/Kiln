@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) Kiln Contributors � see LICENSE-ADDON
 """Kiln — Collaborative Editing for Blender (GPL-3.0-or-later).
 
 Install: zip this folder as kiln.zip → Preferences → Add-ons → Install from Disk.

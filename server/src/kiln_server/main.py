@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (C) Kiln Contributors — see LICENSE-SERVER
 """Kiln sync server â€” FastAPI + WebSocket. Authoritative room sequencer."""
 from __future__ import annotations
 import argparse

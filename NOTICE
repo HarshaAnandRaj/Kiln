@@ -1,11 +1,22 @@
-Kiln licensing (dual):
+Kiln — copyright holders: Kiln Contributors (see git log).
+Contact: file issues at https://github.com/anomalyco/opencode (mention Kiln).
 
-- addon/ (Blender addon using bpy): GNU GPL v3 or later.
-  Blender's Python API is GPL; addons using bpy must be GPL-compatible.
-  Full text: https://www.gnu.org/licenses/gpl-3.0.txt
-  SPDX: GPL-3.0-or-later. See addon/kiln/__init__.py header.
+Dual licensing:
 
-- server/, protocol/, examples/, docs/: Apache License 2.0.
-  SPDX: Apache-2.0.
+- addon/ (Blender addon, imports bpy which is GPL):
+  GNU General Public License v3.0 or later — see LICENSE-ADDON.
+  SPDX-License-Identifier: GPL-3.0-or-later
+  Required because Blender's Python API is GPL; addons using bpy
+  must be GPL-compatible.
 
-You may redistribute under the terms applying to each directory.
+- server/, protocol/, examples/, docs/, docker/:
+  Apache License 2.0 — see LICENSE-SERVER.
+  SPDX-License-Identifier: Apache-2.0
+
+Root files (README.md, docker-compose.yml, .gitignore):
+  Apache-2.0 unless noted.
+
+You may redistribute each directory only under its applicable terms.
+Third-party deps keep their own licenses: FastAPI (MIT), Uvicorn (BSD),
+Pydantic v2 (MIT), websockets (BSD) — see server/pyproject.toml.
+Blender itself is GPL; the addon does not bundle Blender.

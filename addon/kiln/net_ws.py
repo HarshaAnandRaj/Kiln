@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) Kiln Contributors — see LICENSE-ADDON
 """Stdlib-only WebSocket client for Blender (no pip deps).
 
 RFC6455 minimal client: handshake, masked text frames, ping/pong, close.

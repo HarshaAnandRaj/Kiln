@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (C) Kiln Contributors — see LICENSE-SERVER
 """Debug-endpoint + hint tests."""
 import json
 from fastapi.testclient import TestClient
