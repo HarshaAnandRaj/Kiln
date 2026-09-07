@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (C) Kiln Contributors — see LICENSE-SERVER
+# Copyright (C) Kiln Contributors -- see LICENSE-SERVER
 """Kiln protocol models (Pydantic v2). Mirrors protocol/SPEC-v0.1.md."""
 from __future__ import annotations
 from typing import Any, Literal

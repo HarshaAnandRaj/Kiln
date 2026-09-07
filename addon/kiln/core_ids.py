@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-# Copyright (C) Kiln Contributors — see LICENSE-ADDON
+# Copyright (C) Kiln Contributors -- see LICENSE-ADDON
 """Stable Kiln IDs â€” bpy-independent core (testable without Blender)."""
 from __future__ import annotations
 import uuid

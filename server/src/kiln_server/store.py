@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (C) Kiln Contributors — see LICENSE-SERVER
+# Copyright (C) Kiln Contributors -- see LICENSE-SERVER
 """JSONL + snapshot persistence (crash-safe, stdlib only)."""
 from __future__ import annotations
 import json

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (C) Kiln Contributors — see LICENSE-SERVER
+# Copyright (C) Kiln Contributors -- see LICENSE-SERVER
 """Kiln server package."""
 from .main import app, manager, VERSION
 

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-# Copyright (C) Kiln Contributors — see LICENSE-ADDON
+# Copyright (C) Kiln Contributors -- see LICENSE-ADDON
 """Message builders/validators shared with server (no bpy, no deps)."""
 from __future__ import annotations
 import time

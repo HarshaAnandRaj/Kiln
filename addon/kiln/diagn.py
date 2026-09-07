@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-# Copyright (C) Kiln Contributors — see LICENSE-ADDON
+# Copyright (C) Kiln Contributors -- see LICENSE-ADDON
 """Kiln diagnostics: friendly hints, ring-log, connection probe. No bpy at import."""
 from __future__ import annotations
 import json

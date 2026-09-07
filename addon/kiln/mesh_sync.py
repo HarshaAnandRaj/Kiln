@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-# Copyright (C) Kiln Contributors — see LICENSE-ADDON
+# Copyright (C) Kiln Contributors -- see LICENSE-ADDON
 """Mesh pack/unpack â€” pure functions (no bpy) + thin bpy adapters."""
 from __future__ import annotations
 

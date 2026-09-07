@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-# Copyright (C) Kiln Contributors — see LICENSE-ADDON
+# Copyright (C) Kiln Contributors -- see LICENSE-ADDON
 """Addon core tests â€” no Blender needed (bpy imports are lazy/guarded)."""
 import sys
 from pathlib import Path
