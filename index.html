@@ -3,170 +3,183 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kiln — Collaborative Workspace for Blender</title>
+<title>Kiln — A Collaborative Workspace for Blender</title>
 <meta name="description" content="Live multi-user editing and same-session shared compute for Blender. Self-hosted, open-source.">
 <style>
 :root{
-  --paper:#faf8f4; --ink:#1b1a17; --mut:#6b675e; --line:#e4ded2;
-  --card:#ffffff; --acc:#c2410c; --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+  --paper:#f6f1e6; --paper2:#efe8d8; --ink:#201b14; --mut:#6f6455;
+  --rule:#201b14; --hair:#d8cfba; --acc:#8c3b10;
+  --serif:Georgia,"Times New Roman",Times,serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--paper);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased}
-.wrap{max-width:860px;margin:0 auto;padding:0 24px}
-header.top{border-bottom:1px solid var(--line);background:var(--paper)}
-header.top .wrap{display:flex;align-items:baseline;gap:16px;padding:18px 24px}
-.brand{font-weight:700;font-size:18px;letter-spacing:-.2px}
-.brand span{color:var(--acc)}
-.ver{font-family:var(--mono);font-size:12.5px;color:var(--mut);border:1px solid var(--line);border-radius:4px;padding:2px 8px;background:var(--card)}
-nav{margin-left:auto;font-size:14px;display:flex;gap:18px}
-nav a{color:var(--mut);text-decoration:none}
-nav a:hover{color:var(--ink);text-decoration:underline}
-main{padding:56px 0 20px}
-h1{font-size:44px;line-height:1.1;letter-spacing:-1.2px;font-weight:700;max-width:20ch}
-h1 .u{text-decoration:underline;text-decoration-color:var(--acc);text-decoration-thickness:3px;text-underline-offset:5px}
-.lede{font-size:19px;color:#3d3a34;max-width:62ch;margin-top:16px}
-.meta{font-family:var(--mono);font-size:13px;color:var(--mut);margin-top:20px;display:flex;gap:16px;flex-wrap:wrap}
-.meta b{color:var(--ink);font-weight:600}
-.actions{margin-top:24px;display:flex;gap:10px;flex-wrap:wrap}
-a.btn{display:inline-block;font-size:15px;font-weight:600;padding:10px 18px;border-radius:6px;border:1px solid var(--ink);color:var(--ink);text-decoration:none;background:var(--card)}
-a.btn.solid{background:var(--ink);color:#fff}
-a.btn:hover{background:var(--acc);border-color:var(--acc);color:#fff}
-section{padding:40px 0 8px;border-top:1px solid var(--line);margin-top:40px}
-.k{font-family:var(--mono);font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--acc);font-weight:700}
-h2{font-size:26px;letter-spacing:-.5px;margin:6px 0 10px}
-p{max-width:68ch;margin-bottom:12px}
-p.mut,li.mut,.small{color:var(--mut)}
-ul.tight{margin:12px 0 12px 20px}ul.tight li{margin-bottom:6px;max-width:66ch}
-table{width:100%;border-collapse:collapse;font-size:14.5px;margin:16px 0;background:var(--card);border:1px solid var(--line)}
-th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
-th{font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.8px;color:var(--mut);font-weight:600;background:#f4f0e8}
-td code,code.inline{font-family:var(--mono);font-size:13px;background:#f1ece1;border:1px solid var(--line);border-radius:4px;padding:1px 6px}
-pre{background:#1b1a17;color:#e8e2d5;border-radius:8px;padding:18px;font-family:var(--mono);font-size:13.5px;line-height:1.6;overflow-x:auto;margin:16px 0}
-pre .c{color:#8a857a}
-.diagram{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:18px;font-family:var(--mono);font-size:13px;line-height:1.7;overflow-x:auto;margin:16px 0;color:#3d3a34}
-.status{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border:1px solid var(--line);border-radius:8px;background:var(--card);margin:20px 0;overflow:hidden}
-.status div{padding:14px 16px;border-right:1px solid var(--line)}
-.status div:last-child{border-right:none}
-.status .n{font-size:22px;font-weight:700;letter-spacing:-.5px}
-.status .l{font-size:13px;color:var(--mut)}
-h3{font-size:17px;margin:22px 0 6px}
-footer{border-top:1px solid var(--line);margin-top:48px;padding:24px 0 64px;color:var(--mut);font-size:14px}
-footer .wrap{display:flex;gap:16px;flex-wrap:wrap;align-items:baseline}
-@media(max-width:640px){h1{font-size:34px}nav{display:none}}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:17.5px;line-height:1.7;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;
+  background-image:radial-gradient(rgba(32,27,20,.045) 1px,transparent 1px);background-size:5px 5px}
+.wrap{max-width:760px;margin:0 auto;padding:0 24px;position:relative}
+a{color:inherit;text-decoration:underline;text-decoration-color:var(--acc);text-decoration-thickness:1px;text-underline-offset:3px}
+a:hover{color:var(--acc)}
+/* masthead */
+.masthead{border-bottom:3px double var(--rule);padding:22px 0 16px;text-align:center}
+.masthead .over{font-family:var(--sans);font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:var(--mut);display:flex;justify-content:space-between;gap:12px}
+.masthead h0,.title{font-size:64px;line-height:1;letter-spacing:-1px;font-weight:400}
+.masthead h0 span,.title span{font-style:italic;font-weight:400}
+.masthead .sub{font-style:italic;color:var(--mut);font-size:16px;margin-top:6px}
+.dateline{border-bottom:1px solid var(--rule);font-family:var(--sans);font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--mut);display:flex;justify-content:space-between;padding:8px 0;gap:12px;flex-wrap:wrap}
+/* article */
+.article{padding:36px 0 12px}
+.dek{font-size:22px;line-height:1.5;font-style:italic;color:#3d362b;max-width:38em}
+.byline{font-family:var(--sans);font-size:13px;color:var(--mut);margin:18px 0 0;display:flex;gap:14px;flex-wrap:wrap}
+.byline b{color:var(--ink)}
+.rule{border:none;border-top:1px solid var(--rule);margin:28px 0}
+h2.sec{font-size:15px;font-family:var(--sans);letter-spacing:2px;text-transform:uppercase;color:var(--ink);margin:44px 0 4px;display:flex;align-items:baseline;gap:12px}
+h2.sec::after{content:"";flex:1;border-top:1px solid var(--hair);transform:translateY(-4px)}
+h3.head{font-size:31px;line-height:1.2;letter-spacing:-.4px;font-weight:400;margin:4px 0 12px;max-width:22ch}
+p{margin:0 0 14px;max-width:68ch}
+p.lead::first-letter{font-size:3.2em;float:left;line-height:.85;padding:4px 10px 0 0;font-weight:400}
+.small{font-size:15px;color:var(--mut)}
+ul{margin:10px 0 16px 22px}li{margin-bottom:7px;max-width:64ch}
+li::marker{color:var(--acc)}
+/* figures & tables */
+figure{border:1px solid var(--rule);background:var(--paper2);margin:20px 0;padding:0}
+figure .figbody{padding:16px 18px;font-family:var(--mono);font-size:13px;line-height:1.75;white-space:pre;overflow-x:auto}
+figcaption{border-top:1px solid var(--rule);font-family:var(--sans);font-size:12.5px;color:var(--mut);padding:8px 14px;letter-spacing:.2px}
+figcaption b{color:var(--ink)}
+table{width:100%;border-collapse:collapse;margin:18px 0;font-size:15px;background:transparent}
+caption{text-align:left;font-family:var(--sans);font-size:12.5px;color:var(--mut);padding:0 0 8px;letter-spacing:.3px}
+th,td{border-top:1px solid var(--rule);border-bottom:1px solid var(--hair);padding:9px 10px;text-align:left;vertical-align:top}
+th{font-family:var(--sans);font-size:11.5px;text-transform:uppercase;letter-spacing:1.2px;color:var(--mut)}
+td code,code{font-family:var(--mono);font-size:.85em;background:rgba(32,27,20,.06);border:1px solid var(--hair);border-radius:3px;padding:0 5px;white-space:nowrap}
+pre{background:#211c14;color:#ece4d2;padding:18px;font-family:var(--mono);font-size:13px;line-height:1.7;overflow-x:auto;margin:16px 0}
+pre .c{color:#a89c83}
+blockquote{border-left:3px solid var(--acc);margin:22px 0;padding:4px 0 4px 18px;font-style:italic;font-size:20px;line-height:1.55;color:#3d362b}
+blockquote cite{display:block;font-style:normal;font-family:var(--sans);font-size:13px;color:var(--mut);margin-top:8px}
+.footnotes{font-size:14.5px;color:var(--mut);border-top:1px solid var(--hair);margin-top:26px;padding-top:14px}
+.footnotes sup{color:var(--acc)}
+.toc{border:1px solid var(--rule);padding:14px 18px;margin:24px 0;font-family:var(--sans);font-size:14px;background:var(--card,transparent)}
+.toc b{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mut)}
+.toc ol{margin:8px 0 0 20px}.toc li{margin-bottom:4px}
+/* colophon */
+footer{border-top:3px double var(--rule);margin-top:44px;padding:18px 0 70px;font-family:var(--sans);font-size:13px;color:var(--mut)}
+footer .wrap{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
+@media(max-width:640px){.title{font-size:46px}body{font-size:16.5px}}
+@media print{body::before{display:none}body{background:#fff}a{text-decoration:none}}
 </style>
 </head>
 <body>
-<header class="top"><div class="wrap">
-  <div class="brand">Kiln<span>.</span></div>
-  <div class="ver">v0.2-alpha · Blender 4.2+</div>
-  <nav><a href="#sync">Sync</a><a href="#compute">Compute</a><a href="#run">Run it</a><a href="#roadmap">Roadmap</a><a href="#license">License</a></nav>
-</div></header>
 
-<main><div class="wrap">
-  <h1>Multi-user editing for Blender that holds up in production.</h1>
-  <p class="lede">Kiln puts several artists in one <code class="inline">.blend</code> session: shared transforms, locks, comments, snapshots — and a same-session compute pool that borrows idle machines for renders and bakes. Self-hosted with one command. No cloud account.</p>
-  <div class="meta"><span><b>22</b> tests passing</span><span><b>10 Hz</b> transform flush</span><span><b>50k</b> vert mesh cap</span><span>op log: last <b>10k</b></span></div>
-  <div class="actions">
-    <a class="btn solid" href="#run">Run it locally</a>
-    <a class="btn" href="#roadmap">What ships next</a>
+<div class="wrap">
+  <div class="masthead">
+    <div class="over"><span>Vol. I — No. 2</span><span>Blender · Collaboration · Compute</span><span>Self-hosted</span></div>
+    <div class="title">Kiln<span>.</span></div>
+    <div class="sub">A collaborative workspace for Blender — live editing &amp; a same-session compute pool</div>
   </div>
+  <div class="dateline"><span>v0.2-alpha · Blender 4.2 LTS and later</span><span>22 tests passing · Apache-2.0 / GPL-3.0</span><span>Set in Georgia · Printed on pixels</span></div>
 
-  <div class="status">
-    <div><div class="n">v0.1</div><div class="l">Live sync — done, tested</div></div>
-    <div><div class="n">v0.2</div><div class="l">Shared compute — in this repo</div></div>
-    <div><div class="n">v0.3</div><div class="l">Real pixels, branches</div></div>
-    <div><div class="n">v1.0</div><div class="l">Scale, sandboxing</div></div>
-  </div>
+  <div class="article">
+    <p class="dek">Several artists, one <code>.blend</code> session. Move a cube and it moves on every machine; borrow an idle workstation for the night's renders. Kiln does this without a cloud account — one command, on your own hardware.</p>
+    <div class="byline"><span><b>By</b> the Kiln contributors</span><span><b>Filed from</b> rooms, not files</span><span><b>Reading time</b> six minutes</span></div>
 
-<section id="sync">
-  <div class="k">01 — Live sync</div>
-  <h2>Synchronise operations, not files.</h2>
-  <p>Sending whole <code class="inline">.blend</code> files on every edit is slow and unmergeable. Kiln sends small ordered operations over WebSockets from an authoritative server: each op gets a sequence number, clients apply idempotently and drop their own echoes.</p>
-  <table>
-    <tr><th>Op</th><th>What it carries</th><th>Notes</th></tr>
-    <tr><td><code class="inline">object.upsert / remove</code></td><td>Stable <code class="inline">kiln_id</code>, type, name, parent</td><td>Rename-safe; tombstones on delete</td></tr>
-    <tr><td><code class="inline">transform</code></td><td>loc / rot / scale, visibility</td><td>Partial updates allowed, last-writer-wins per field</td></tr>
-    <tr><td><code class="inline">mesh.replace</code></td><td>verts + polys, full replace</td><td>Capped at 50k verts; push on edit-exit, not per keystroke</td></tr>
-    <tr><td><code class="inline">lock / presence / comment / snapshot</code></td><td>Holder, cursor, body, scene dump</td><td>Soft locks; presence at 2 Hz; snapshots for restore</td></tr>
-  </table>
-  <h3>Design decisions worth knowing</h3>
-  <ul class="tight">
-    <li><b>Stable IDs.</b> Every object gets <code class="inline">obj["kiln_id"]</code> (UUID). Rename and reparent without forking.</li>
-    <li><b>Authoritative server, dumb clients.</b> First-seen wins sequence order. No CRDT yet — predictable beats clever at 2–10 users.</li>
-    <li><b>Stdlib-only addon.</b> Blender's embedded Python often lacks pip, so the WebSocket client is raw sockets. No dependency install step.</li>
-    <li><b>Main-thread discipline.</b> Network thread → queue → <code class="inline">bpy.app.timers</code>. <code class="inline">bpy</code> is never touched off-thread.</li>
-  </ul>
-  <h3>What it won't do (yet)</h3>
-  <ul class="tight mut">
-    <li>No per-vertex deltas — large sculpts go via snapshot, not live stream.</li>
-    <li>No undo sync — remote edits arrive as new ops, not local undo steps.</li>
-    <li>No permissions beyond soft locks. Room members are trusted.</li>
-  </ul>
-</section>
+    <div class="toc">
+      <b>Contents</b>
+      <ol>
+        <li><a href="#i">I. Synchronise operations, not files</a></li>
+        <li><a href="#ii">II. The session is the farm</a></li>
+        <li><a href="#iii">III. To run it</a></li>
+        <li><a href="#iv">IV. What comes next</a></li>
+        <li><a href="#v">V. On licensing</a></li>
+      </ol>
+    </div>
 
-<section id="compute">
-  <div class="k">02 — Shared compute</div>
-  <h2>The session is the farm.</h2>
-  <p>Only machines already in the room can contribute — no outside workers, no job uploads. Because every sharer holds the same synced scene, a job is just parameters: <i>frames 1–24, tiles 2×2 of frame 7, bake physics</i>. Workers render their local copy.</p>
-  <div class="diagram">room "demo" ── members: anand(4cpu) · bob(16cpu+GPU) · mei(32cpu)<br>job frame[1..4] ──► task:f1→anand · task:f2→bob · task:f3→mei · task:f4→waiting<br>job bake[physics] ──► assigned: mei (highest score) · others: wait<br>disconnect ──► leases expire (60–120s) ──► tasks return to waiting</div>
-  <table>
-    <tr><th>Mode</th><th>Split</th><th>Assignment</th></tr>
-    <tr><td>Frame farm</td><td>One task per frame (max 32/job)</td><td>Greedy claim; best waiting task per worker</td></tr>
-    <tr><td>Tile farm</td><td>Grid² tiles with border, 0–1 UV bounds</td><td>GPU machines naturally outscore for tiles</td></tr>
-    <tr><td>Bake offload</td><td>Single task (whole bake)</td><td>Only the top-scoring sharer may claim</td></tr>
-  </table>
-<pre><span class="c"># allocation score — deterministic, in server/src/kiln_server/compute.py</span>
-score = 10*cpu + 20*gpu + 5*mem/8 - 30*load - rtt/50
-veto if: not sharing · unseen &gt;30s · Blender major.minor mismatch</pre>
-  <p class="mut">Current alpha reports deterministic checksums instead of pixels — enough to prove scheduling, allocation, requeue and progress end-to-end. EXR/PNG blob assembly and a Docker sandbox for untrusted farms follow in v0.3 / v1.0. Until then: farm only with people you trust; a <code class="inline">.blend</code> can run arbitrary code.</p>
-</section>
+    <h2 class="sec" id="i">Chapter I</h2>
+    <h3 class="head">Synchronise operations, not files.</h3>
+    <p class="lead">Sending whole <code>.blend</code> files on every edit is slow and unmergeable. Kiln instead sends small ordered operations over WebSockets from an authoritative server. Each operation receives a sequence number; clients apply it idempotently and quietly discard their own echoes.</p>
+    <p>Every object carries a stable identifier (<code>obj["kiln_id"]</code>, a UUID), so a rename or a reparent does not fork the scene. Transforms flush at ten hertz per object; mesh replacements — capped at fifty thousand vertices — are pushed on leaving edit mode, not per keystroke.</p>
 
-<section id="run">
-  <div class="k">03 — Run it</div>
-  <h2>Two terminals, two Blenders.</h2>
-<pre><span class="c"># terminal 1 — server</span>
+    <table>
+      <caption><b>Table I.</b> The operation vocabulary, v0.1.</caption>
+      <tr><th>Operation</th><th>Carries</th><th>Remark</th></tr>
+      <tr><td><code>object.upsert / remove</code></td><td>Stable id, type, name, parent</td><td>Deletes kept as tombstones</td></tr>
+      <tr><td><code>transform</code></td><td>Location, rotation, scale, visibility</td><td>Partial updates; last-writer-wins per field</td></tr>
+      <tr><td><code>mesh.replace</code></td><td>Vertices and polygons, in full</td><td>See cap above; snapshots for the heavy lifts</td></tr>
+      <tr><td><code>lock · presence · comment · snapshot</code></td><td>Holder; cursor; prose; scene dump</td><td>Locks are soft; presence at two hertz</td></tr>
+    </table>
+
+    <p>Four decisions, stated plainly. <b>First,</b> the server is authoritative and the clients are simple — first-seen wins the sequence. No conflict-free replicated data types yet; at two to ten users, predictability is worth more than cleverness. <b>Second,</b> the addon uses only the standard library for networking, because Blender's embedded Python so often lacks pip. <b>Third,</b> nothing touches <code>bpy</code> off the main thread; the network thread writes to a queue drained by a timer. <b>Fourth,</b> locks are advisory and released on disconnect — a red banner, not a deadlock.</p>
+
+    <blockquote>“We wanted the feeling of passing a sketchbook across the table — you can see the other hand on the page.”<cite>— Design note, docs/ARCHITECTURE.md</cite></blockquote>
+
+    <p class="small">What it will not do yet: per-vertex deltas for heavy sculpts (use snapshots); undo across machines (remote edits arrive as new operations); permissions beyond soft locks. Room members are trusted.<sup>1</sup></p>
+
+    <h2 class="sec" id="ii">Chapter II</h2>
+    <h3 class="head">The session is the farm.</h3>
+    <p>Only machines already in the room may contribute — no outside workers, no accounts, no uploads. Because each sharer already holds the synced scene, a job is merely parameters: <i>frames one through twenty-four; tiles two-by-two of frame seven; bake the cloth.</i> Workers render their local copy and report back.</p>
+
+    <figure>
+      <div class="figbody">room "demo" ── anand (4 cpu) · bob (16 cpu + GPU) · mei (32 cpu)
+job frame[1..4] ──► f1→anand · f2→bob · f3→mei · f4→waiting
+job bake[physics] ──► mei alone (highest score) · others wait
+a dropout ──► leases lapse (60–120 s) ──► tasks return to waiting</div>
+      <figcaption><b>Fig. 1.</b> One evening's farm. Allocation follows the score below; failures requeue without ceremony.</figcaption>
+    </figure>
+
+    <table>
+      <caption><b>Table II.</b> Three modes of shared compute, v0.2-alpha.</caption>
+      <tr><th>Mode</th><th>Division</th><th>Assignment</th></tr>
+      <tr><td>Frame farm</td><td>One task per frame, to 32 per job</td><td>Greedy claim; best waiting task per worker</td></tr>
+      <tr><td>Tile farm</td><td>Grid-squared tiles with border, in 0–1 UV</td><td>Graphics machines outscore naturally</td></tr>
+      <tr><td>Bake offload</td><td>A single task, the whole bake</td><td>The top-scoring sharer only; the rest wait</td></tr>
+    </table>
+
+<pre><span class="c"># The allocation score — server/src/kiln_server/compute.py</span>
+score = 10·cpu + 20·gpu + 5·mem/8 − 30·load − rtt/50
+veto when: not sharing · unseen &gt; 30 s · Blender major.minor differs</pre>
+    <p class="small">A frank caveat: this alpha reports deterministic checksums rather than pixels — sufficient to prove scheduling, allocation, requeue and progress end to end. True EXR/PNG assembly and a sandbox for untrusted farms arrive in §§IV. Until then, farm only with colleagues you trust; a <code>.blend</code> can execute arbitrary code.<sup>2</sup></p>
+
+    <h2 class="sec" id="iii">Chapter III</h2>
+    <h3 class="head">To run it.</h3>
+    <p>Two terminals, two Blenders. First the server:</p>
+<pre><span class="c"># the sequencer and scheduler</span>
 pip install -e ./server
 kiln-server --port 8000
-<span class="c"># health check → {"ok": true}</span>
-curl http://127.0.0.1:8000/healthz</pre>
-  <ul class="tight">
-    <li><b>Blender 4.2+:</b> zip <code class="inline">addon/kiln</code> → Preferences → Install from Disk → enable <i>Kiln Collaborative Editing</i>.</li>
-    <li><b>Both machines:</b> sidebar (N) → Kiln → same Server URL, same Room (<code class="inline">demo</code>), <i>different</i> Names → Connect.</li>
-    <li><b>Verify:</b> move the default cube. Counters read <code class="inline">seq … ↑n ↓m</code>. Then Shared Compute → <i>Share my CPU/GPU</i> → <i>Render Frames 1–4</i>.</li>
-    <li><b>Stuck?</b> Panel → <i>Test</i> gives latency plus a fix. <i>Export Log</i> writes <code class="inline">kiln-debug.txt</code> for issues. Headless check: <code class="inline">python examples/debug_probe.py</code>.</li>
-  </ul>
-<pre><span class="c"># repo layout</span>
-addon/kiln/        Blender addon (GPL) — net, sync, worker, panel
-server/            FastAPI sequencer + scheduler (Apache-2.0)
-protocol/          SPEC-v0.1 + SPEC-COMPUTE-v0.2 + schema.json
-docs/              ARCHITECTURE, DEBUGGING, COMPUTE, ROADMAP
-examples/          two_cubes_sync.py, debug_probe.py, compute_farm_demo.py</pre>
-</section>
+curl http://127.0.0.1:8000/healthz   # → {"ok": true}</pre>
+    <ul>
+      <li><b>Blender 4.2 or later:</b> compress <code>addon/kiln</code> to a zip, <i>Preferences → Install from Disk</i>, enable <i>Kiln Collaborative Editing</i>.</li>
+      <li><b>Both machines:</b> in the sidebar (N) → <i>Kiln</i>, enter the same server address and the same room (<code>demo</code>), but different names. Press <i>Connect</i>.</li>
+      <li><b>Verify:</b> move the default cube; the counters should read <code>seq … ↑n ↓m</code>. Then, under <i>Shared Compute</i>, switch on <i>Share my CPU/GPU</i> and submit <i>Render Frames 1–4</i>.</li>
+      <li><b>If stuck:</b> <i>Test</i> reports latency with a remedy; <i>Export Log</i> writes <code>kiln-debug.txt</code> for an issue report. Headless check: <code>python examples/debug_probe.py</code>.</li>
+    </ul>
+    <p class="small">Layout of the repository: <code>addon/kiln/</code> the Blender client; <code>server/</code> the FastAPI sequencer and scheduler; <code>protocol/</code> the wire specifications; <code>docs/</code> architecture, debugging, compute, roadmap; <code>examples/</code> headless demonstrations.</p>
 
-<section id="roadmap">
-  <div class="k">04 — Roadmap</div>
-  <h2>What we will deliver.</h2>
-  <table>
-    <tr><th>Milestone</th><th>Scope</th><th>Status</th></tr>
-    <tr><td>v0.1</td><td>Rooms, presence, locks, comments, snapshots, op replay, debug endpoints</td><td>Done</td></tr>
-    <tr><td>v0.2</td><td>Frame / tile / bake farm, capability-aware scheduler, auto-claim, requeue</td><td>In repo (alpha)</td></tr>
-    <tr><td>v0.3</td><td>Blob store with real EXR/PNG assembly, per-vertex deltas, undo coalescing, branches + diff + 3-way merge, accounts (OIDC)</td><td>Next</td></tr>
-    <tr><td>v1.0</td><td>50-user rooms (Redis), sculpt CRDT, WebRTC voice, E2EE rooms, S3 snapshots, sandboxed open farms</td><td>Planned</td></tr>
-  </table>
-  <p class="mut">Rule: a protocol change ships with SPEC + schema + tests in the same PR. <code class="inline">pytest server/tests addon/tests</code> stays green.</p>
-</section>
+    <h2 class="sec" id="iv">Chapter IV</h2>
+    <h3 class="head">What comes next.</h3>
+    <table>
+      <caption><b>Table III.</b> The programme.</caption>
+      <tr><th>Milestone</th><th>Scope</th><th>State</th></tr>
+      <tr><td>v0.1</td><td>Rooms, presence, locks, comments, snapshots, replay, debug endpoints</td><td>Done</td></tr>
+      <tr><td>v0.2</td><td>Frame, tile and bake farm; capability-aware scheduler; auto-claim; requeue</td><td>In this repository</td></tr>
+      <tr><td>v0.3</td><td>Blob store with true pixel assembly; per-vertex deltas; undo coalescing; branches, diff and three-way merge; accounts</td><td>Next</td></tr>
+      <tr><td>v1.0</td><td>Fifty-user rooms; sculpt CRDT; voice; end-to-end encryption; object storage; sandboxed open farms</td><td>Planned</td></tr>
+    </table>
+    <p class="small">House rule: a wire-protocol change ships with specification, schema and tests in the same proposal. <code>pytest server/tests addon/tests</code> remains green.</p>
 
-<section id="license">
-  <div class="k">05 — License</div>
-  <h2>Dual-licensed, Blender-safe.</h2>
-  <p><code class="inline">addon/</code> is <b>GPL-3.0-or-later</b> — required, because <code class="inline">import bpy</code> makes it a Blender derivative. Full text in <code class="inline">LICENSE-ADDON</code>. Everything else (<code class="inline">server/</code>, <code class="inline">protocol/</code>, <code class="inline">examples/</code>, <code class="inline">docs/</code>) is <b>Apache-2.0</b> — see <code class="inline">LICENSE-SERVER</code>. Per-directory terms are mapped in <code class="inline">NOTICE</code>; every source file carries an SPDX header.</p>
-</section>
+    <h2 class="sec" id="v">Chapter V</h2>
+    <h3 class="head">On licensing.</h3>
+    <p>The addon (<code>addon/</code>) is <b>GNU GPL-3.0-or-later</b> — necessarily so, as <code>import bpy</code> makes it a derivative of Blender. The full text is in <code>LICENSE-ADDON</code>. All else — <code>server/</code>, <code>protocol/</code>, <code>examples/</code>, <code>docs/</code> — is <b>Apache-2.0</b> (see <code>LICENSE-SERVER</code>), a permissive grant suited to studio self-hosting. The mapping is recorded in <code>NOTICE</code>; each file bears an SPDX header.</p>
 
-</div></main>
+    <div class="footnotes">
+      <sup>1</sup> Locks are advisory by design. A determined collaborator can still overwrite; the log records who did it.<br>
+      <sup>2</sup> Run Blender with auto-execution disabled on farm machines until the §IV sandbox lands.
+    </div>
+  </div>
+
+</div>
 
 <footer><div class="wrap">
-  <span><b style="color:var(--ink)">Kiln.</b> Fire scenes together.</span>
-  <span style="margin-left:auto">Self-host: <code class="inline">docker compose up --build</code> · File issues with <code class="inline">kiln-debug.txt</code> attached</span>
+  <span><b style="color:var(--ink)">Kiln.</b> &nbsp;Fire scenes together.</span>
+  <span>Self-host: <code>docker compose up --build</code> &nbsp;·&nbsp; Correspondences: attach <code>kiln-debug.txt</code></span>
 </div></footer>
 </body>
 </html>
