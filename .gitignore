@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+data/
+*.jsonl
+*.snapshot.json
+dist/
+build/
+*.egg-info/
+kiln.zip
+.DS_Store

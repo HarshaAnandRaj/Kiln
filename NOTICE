@@ -1,0 +1,11 @@
+Kiln licensing (dual):
+
+- addon/ (Blender addon using bpy): GNU GPL v3 or later.
+  Blender's Python API is GPL; addons using bpy must be GPL-compatible.
+  Full text: https://www.gnu.org/licenses/gpl-3.0.txt
+  SPDX: GPL-3.0-or-later. See addon/kiln/__init__.py header.
+
+- server/, protocol/, examples/, docs/: Apache License 2.0.
+  SPDX: Apache-2.0.
+
+You may redistribute under the terms applying to each directory.

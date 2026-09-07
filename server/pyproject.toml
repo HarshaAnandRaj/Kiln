@@ -1,0 +1,25 @@
+[project]
+name = "kiln-server"
+version = "0.1.0"
+description = "Kiln collaborative sync server for Blender"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+dependencies = ["fastapi>=0.110", "uvicorn[standard]>=0.29", "pydantic>=2.5", "websockets>=12"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "httpx>=0.27", "pytest-asyncio>=0.23"]
+
+[project.scripts]
+kiln-server = "kiln_server.main:cli"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]

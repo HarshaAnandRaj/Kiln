@@ -1,0 +1,13 @@
+services:
+  kiln:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.server
+    ports:
+      - "8000:8000"
+    volumes:
+      - kiln-data:/data
+    environment:
+      KILN_DATA: /data
+volumes:
+  kiln-data:
