@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-# Copyright (C) Kiln Contributors � see LICENSE-ADDON
+# Copyright (C) Kiln Contributors � see LICENSE-ADDON
 """Kiln — Collaborative Editing for Blender (GPL-3.0-or-later).
 
 Install: zip this folder as kiln.zip → Preferences → Add-ons → Install from Disk.
@@ -17,7 +17,7 @@ bl_info = {
 
 import importlib
 
-_submods = ["core_ids", "proto", "net_ws", "mesh_sync", "sync", "ui"]
+_submods = ["core_ids", "proto", "net_ws", "mesh_sync", "sync", "diagn", "compute_worker", "ui"]
 
 
 def _reload():

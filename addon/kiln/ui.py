@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-# Copyright (C) Kiln Contributors � see LICENSE-ADDON
+# Copyright (C) Kiln Contributors � see LICENSE-ADDON
 """Kiln Blender UI + connection state. Loaded only inside Blender."""
 from __future__ import annotations
 import queue
@@ -17,6 +17,7 @@ from .net_ws import KilnWS
 from .sync import SyncEngine, scan_bpy_scene, ensure_bpy_ids, apply_op_bpy, ObjSnap
 from . import mesh_sync
 from .diagn import RingLog, hint_for, probe_server
+from . import compute_worker as CW
 
 
 class KilnState:
@@ -45,6 +46,13 @@ class KilnState:
         self.rtt_ms = -1
         self.diag: dict = {}
         self._hello_at = 0.0
+        # shared compute (same-session farm)
+        self.share = False
+        self.workers: list[dict] = []
+        self.jobs: dict[str, dict] = {}
+        self.active_task: dict | None = None
+        self._claim_at = 0.0
+        self._compute_at = 0.0
 
     def http_base(self) -> str:
         return self.server_http_base
@@ -228,9 +236,63 @@ def kiln_timer():
                 STATE.ws.send(proto.make_presence(STATE.room, STATE.user, sel, cursor))
             except Exception:
                 pass
+        # 4. shared compute pump (same-session farm, seamless)
+        try:
+            compute_pump()
+        except Exception as e:
+            log("WARN", f"compute pump: {e}")
     except Exception as e:
         STATE.errors.append(f"timer: {e}")
     return 0.2
+
+
+def compute_pump():
+    """Auto-advertise + auto-claim + simulated execute. Real bpy render plugs into _execute_real()."""
+    if not STATE.connected or STATE.ws is None:
+        return
+    now = time.time()
+    # advertise share state at most every 5s / on change
+    if now - STATE._compute_at > 5.0:
+        STATE._compute_at = now
+        try:
+            load = 1.0 if STATE.active_task else 0.0
+            STATE.ws.send(CW.hello_frame(STATE.room, STATE.user, STATE.share,
+                                         max(0, STATE.rtt_ms), load))
+            STATE.sent_count += 1
+        except Exception:
+            pass
+    # execute active task in slices (seamless: ~2s per task, progress reports)
+    if STATE.active_task:
+        at = STATE.active_task
+        at["pct"] = min(100, at.get("pct", 0) + 25)
+        try:
+            STATE.ws.send({"t": "job.progress", "room": STATE.room, "from": STATE.user,
+                           "payload": {"job_id": at["job_id"], "task_id": at["task_id"], "pct": at["pct"]}})
+            STATE.sent_count += 1
+        except Exception:
+            pass
+        if at["pct"] >= 100:
+            try:
+                STATE.ws.send({"t": "job.result", "room": STATE.room, "from": STATE.user,
+                               "payload": {"job_id": at["job_id"], "task_id": at["task_id"],
+                                           "ok": True, "artifact": CW.fake_artifact(at.get("type", "frame"), at.get("spec", {}))}})
+                STATE.sent_count += 1
+            except Exception:
+                pass
+            STATE.active_task = None
+        return
+    # idle + sharing → claim from newest open job, max 1 claim / 2s
+    if STATE.share and now - STATE._claim_at > 2.0:
+        open_jobs = [j for j in STATE.jobs.values() if j.get("status") == "open"]
+        if open_jobs:
+            STATE._claim_at = now
+            jid = sorted(open_jobs, key=lambda j: j.get("job_id", ""))[-1]["job_id"]
+            try:
+                STATE.ws.send({"t": "job.claim", "room": STATE.room, "from": STATE.user,
+                               "payload": {"job_id": jid}})
+                STATE.sent_count += 1
+            except Exception:
+                pass
 
 
 def handle_frame(msg: dict):
@@ -301,6 +363,32 @@ def handle_frame(msg: dict):
         STATE.errors = STATE.errors[-20:]
         STATE.status = f"Server: {code}"
         log("ERROR", f"{code}: {payload.get('detail')} FIX: {hint}")
+    elif t == "worker.list":
+        STATE.workers = payload.get("workers", [])
+    elif t == "job.posted":
+        STATE.jobs[payload.get("job_id", "?")] = payload
+        log("INFO", f"job posted {payload.get('type')} {payload.get('job_id')} {payload.get('total')} tasks")
+    elif t == "job.task":
+        STATE.active_task = {"job_id": payload.get("job_id"), "task_id": payload.get("task_id"),
+                             "spec": payload.get("spec"), "type": payload.get("type"),
+                             "pct": 0, "started": time.time()}
+        log("INFO", f"claimed {payload.get('task_id')}")
+    elif t == "job.wait":
+        pass
+    elif t == "job.progress":
+        jid = payload.get("job_id")
+        if jid in STATE.jobs:
+            STATE.jobs[jid].update({k: payload[k] for k in ("done", "total", "avg_pct", "status") if k in payload})
+    elif t == "job.result":
+        jid = payload.get("job_id")
+        if jid in STATE.jobs:
+            STATE.jobs[jid].update({k: payload[k] for k in ("done", "total", "avg_pct", "status") if k in payload})
+        if STATE.active_task and payload.get("task_id") == STATE.active_task.get("task_id"):
+            STATE.active_task = None
+        log("INFO", f"job {jid} {payload.get('done')}/{payload.get('total')} done")
+    elif t == "job.cancelled":
+        STATE.jobs.pop(payload.get("job_id", ""), None)
+        STATE.active_task = None
 
 
 def update_presence_empty(user: str, payload: dict):
@@ -533,6 +621,73 @@ class KILN_OT_clear(bpy.types.Operator):
         return {"FINISHED"}
 
 
+class KILN_OT_share_toggle(bpy.types.Operator):
+    bl_idname = "kiln.share_toggle"
+    bl_label = "Share my CPU/GPU"
+    bl_description = "Offer this machine to the SAME session farm (smart allocation picks best worker)"
+    def execute(self, context):
+        STATE.share = not STATE.share
+        if STATE.connected and STATE.ws:
+            try:
+                STATE.ws.send(CW.hello_frame(STATE.room, STATE.user, STATE.share, max(0, STATE.rtt_ms)))
+                STATE.sent_count += 1
+            except Exception:
+                pass
+        log("INFO", f"sharing {'ON — this PC joins the farm' if STATE.share else 'OFF'}")
+        self.report({"INFO"}, "Sharing ON" if STATE.share else "Sharing OFF")
+        return {"FINISHED"}
+
+
+class KILN_OT_submit_frames(bpy.types.Operator):
+    bl_idname = "kiln.submit_frames"
+    bl_label = "Render Frames 1-4"
+    bl_description = "Submit frame farm job to session workers (seamless: they already have the scene)"
+    frame_start: bpy.props.IntProperty(default=1, min=1, max=10000)
+    frame_end: bpy.props.IntProperty(default=4, min=1, max=10000)
+    def invoke(self, context, event):
+        return context.window_manager.invoke_props_dialog(self)
+    def execute(self, context):
+        if not STATE.connected or not STATE.ws:
+            self.report({"WARNING"}, "Connect first")
+            return {"CANCELLED"}
+        STATE.ws.send(CW.submit_frame(STATE.room, STATE.user, self.frame_start, self.frame_end))
+        STATE.sent_count += 1
+        log("INFO", f"submitted frames {self.frame_start}-{self.frame_end} to farm")
+        return {"FINISHED"}
+
+
+class KILN_OT_submit_tiles(bpy.types.Operator):
+    bl_idname = "kiln.submit_tiles"
+    bl_label = "Render Tiles (2x2)"
+    bl_description = "Split current frame into tiles across session workers"
+    grid: bpy.props.IntProperty(default=2, min=1, max=5)
+    def invoke(self, context, event):
+        return context.window_manager.invoke_props_dialog(self)
+    def execute(self, context):
+        if not STATE.connected or not STATE.ws:
+            return {"CANCELLED"}
+        try:
+            fr = context.scene.frame_current
+        except Exception:
+            fr = 1
+        STATE.ws.send(CW.submit_tiles(STATE.room, STATE.user, fr, self.grid))
+        STATE.sent_count += 1
+        return {"FINISHED"}
+
+
+class KILN_OT_submit_bake(bpy.types.Operator):
+    bl_idname = "kiln.submit_bake"
+    bl_label = "Bake on fastest PC"
+    bl_description = "Send physics bake to beefiest sharer in session (smart allocation)"
+    def execute(self, context):
+        if not STATE.connected or not STATE.ws:
+            return {"CANCELLED"}
+        STATE.ws.send(CW.submit_bake(STATE.room, STATE.user))
+        STATE.sent_count += 1
+        log("INFO", "bake submitted to fastest sharer")
+        return {"FINISHED"}
+
+
 def _selected_lock_info(context):
     """Return (holder_or_None, names) for current selection."""
     holders = set()
@@ -603,6 +758,26 @@ class KILN_PT_panel(bpy.types.Panel):
             L.label(text="Comments (latest):")
             for c in STATE.comments[-5:]:
                 L.label(text=f"{c.get('from')}: {(c.get('body') or '')[:60]}")
+        # 2b. Shared Compute (same-session farm, seamless)
+        L.separator()
+        cbox = L.box()
+        cbox.label(text=f"Shared Compute — session farm ({len(STATE.workers)} sharers)", icon="RENDER_ANIMATION")
+        cbox.operator("kiln.share_toggle",
+                      text="Sharing: ON (click to stop)" if STATE.share else "Share my CPU/GPU",
+                      icon="CHECKBOX_HLT" if STATE.share else "CHECKBOX_DEHLT")
+        if not STATE.workers and STATE.connected:
+            cbox.label(text="No sharers yet — turn Sharing ON on 2+ PCs.")
+        else:
+            for w in STATE.workers[:6]:
+                cbox.label(text=f"• {w.get('user')} {w.get('cpu')}cpu {w.get('blender')}")
+        row = cbox.row(align=True)
+        row.operator("kiln.submit_frames", icon="RENDER_ANIMATION")
+        row.operator("kiln.submit_tiles", icon="RENDERLAYERS")
+        cbox.operator("kiln.submit_bake", icon="PHYSICS")
+        for jid, j in list(STATE.jobs.items())[-3:]:
+            cbox.label(text=f"{j.get('type')} {jid[:10]}: {j.get('done',0)}/{j.get('total',0)} ({j.get('status')})")
+        if STATE.active_task:
+            cbox.label(text=f"Working: {STATE.active_task.get('task_id','')[:22]} {STATE.active_task.get('pct',0)}%", icon="TIME")
         # 3. Troubleshooting (always visible, human fixes)
         L.separator()
         box = L.box()
@@ -627,7 +802,9 @@ class KILN_PT_panel(bpy.types.Panel):
 CLASSES = (KILN_OT_connect, KILN_OT_disconnect, KILN_OT_lock_selected,
            KILN_OT_unlock_selected, KILN_OT_push_mesh, KILN_OT_push_snapshot,
            KILN_OT_pull_snapshot, KILN_OT_add_comment, KILN_OT_test_connection,
-           KILN_OT_export_log, KILN_OT_clear, KILN_PT_panel)
+           KILN_OT_export_log, KILN_OT_clear, KILN_OT_share_toggle,
+           KILN_OT_submit_frames, KILN_OT_submit_tiles, KILN_OT_submit_bake,
+           KILN_PT_panel)
 
 
 def register_ui():
