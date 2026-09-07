@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kiln — Collaborative Workspace for Blender</title>
+<meta name="description" content="Google-Docs-style live editing + same-session shared compute for Blender. Self-hosted, open-source.">
+<style>
+:root{
+  --bg:#0d1117; --bg2:#161b22; --card:#1c2330; --line:#2a3444;
+  --txt:#e8edf3; --mut:#9aa7b8; --acc:#e8833a; --acc2:#3fa9f5; --grn:#3fb950; --pur:#a371f7;
+  --r:14px; --max:1080px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:radial-gradient(1200px 600px at 70% -10%,#223148 0%,var(--bg) 55%) fixed,var(--bg);color:var(--txt);font-family:Inter,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.6}
+a{color:var(--acc2);text-decoration:none}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 22px}
+nav{position:sticky;top:0;z-index:10;backdrop-filter:blur(12px);background:rgba(13,17,23,.82);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;gap:14px;padding:14px 22px}
+.logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--acc),#c14e1f);display:grid;place-items:center;font-weight:900;font-size:18px;box-shadow:0 4px 18px rgba(232,131,58,.4)}
+.nlinks{margin-left:auto;display:flex;gap:18px;font-size:14px;color:var(--mut)}
+.nlinks a{color:var(--mut)}.nlinks a:hover{color:var(--txt)}
+.btn{display:inline-block;padding:11px 20px;border-radius:10px;font-weight:700;font-size:15px;border:1px solid var(--line);background:var(--card);color:var(--txt);transition:.15s}
+.btn:hover{transform:translateY(-1px);border-color:var(--acc)}
+.btn.pri{background:linear-gradient(135deg,var(--acc),#c14e1f);border:none;box-shadow:0 6px 24px rgba(232,131,58,.35)}
+.hero{padding:72px 0 40px;text-align:center}
+.pill{display:inline-block;padding:6px 14px;border:1px solid var(--line);border-radius:99px;font-size:13px;color:var(--mut);background:rgba(255,255,255,.03);margin-bottom:18px}
+.pill b{color:var(--grn)}
+h1{font-size:clamp(38px,6vw,64px);line-height:1.05;letter-spacing:-1.5px}
+h1 span{background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--mut);font-size:clamp(16px,2.4vw,20px);max-width:720px;margin:18px auto 28px}
+.cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.stats{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:34px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px 20px;font-size:14px;color:var(--mut)}
+.stat b{color:var(--txt);font-size:18px;display:block}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin:26px 0}
+.card{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.01)),var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px}
+.card h3{font-size:18px;margin-bottom:8px}
+.card p{color:var(--mut);font-size:15px}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:3px 10px;border-radius:99px;margin-bottom:10px;letter-spacing:.4px}
+.t-live{background:rgba(63,185,80,.15);color:var(--grn);border:1px solid rgba(63,185,80,.35)}
+.t-farm{background:rgba(63,169,245,.14);color:var(--acc2);border:1px solid rgba(63,169,245,.35)}
+.t-soon{background:rgba(163,113,247,.14);color:var(--pur);border:1px solid rgba(163,113,247,.35)}
+section{padding:34px 0}
+h2{font-size:30px;letter-spacing:-.6px;margin-bottom:6px}
+.kicker{color:var(--acc);font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:1.4px}
+.mut{color:var(--mut)}
+.code{background:#0a0e14;border:1px solid var(--line);border-radius:var(--r);padding:18px;font-family:ui-monospace,Consolas,monospace;font-size:13.5px;overflow-x:auto;color:#c9d4e3;margin-top:14px}
+.code .c{color:#6b7a90}.code .g{color:var(--grn)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:760px){.cols{grid-template-columns:1fr}.nlinks{display:none}}
+.timeline{border-left:2px solid var(--line);margin:18px 0 0 8px;padding-left:22px;display:grid;gap:20px}
+.tl-dot{width:12px;height:12px;border-radius:50%;background:var(--acc);margin-left:-29px;float:left;margin-top:6px;box-shadow:0 0 0 4px rgba(232,131,58,.18)}
+.done .tl-dot{background:var(--grn);box-shadow:0 0 0 4px rgba(63,185,80,.18)}
+footer{border-top:1px solid var(--line);padding:28px 0 60px;color:var(--mut);font-size:14px;text-align:center}
+kbd{background:#0a0e14;border:1px solid var(--line);border-bottom-width:2px;border-radius:6px;padding:1px 7px;font-size:13px;font-family:inherit}
+.mock{background:#0a0e14;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin-top:18px;text-align:left}
+.mockbar{display:flex;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line);align-items:center}
+.dot{width:11px;height:11px;border-radius:50%}.r{background:#ff5f57}.y{background:#febc2e}.g{background:#28c840}
+.mockbody{display:grid;grid-template-columns:220px 1fr;min-height:260px}
+@media(max-width:700px){.mockbody{grid-template-columns:1fr}}
+.side{border-right:1px solid var(--line);padding:16px;font-size:13px;color:var(--mut)}
+.view{padding:18px;display:grid;gap:10px;align-content:start}
+.row{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:13.5px}
+.avatar{width:22px;height:22px;border-radius:50%;font-size:11px;font-weight:800;display:grid;place-items:center;color:#fff}
+.bar{height:8px;border-radius:99px;background:#0d1420;overflow:hidden;flex:1}
+.bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--acc),var(--acc2))}
+.livedot{width:9px;height:9px;border-radius:50%;background:var(--grn);box-shadow:0 0 8px var(--grn);animation:pl 1.6s infinite}
+@keyframes pl{50%{opacity:.4}}
+</style>
+</head>
+<body>
+<nav><div class="wrap">
+  <div class="logo">K</div><b>Kiln</b><span class="mut" style="font-size:13px">for Blender</span>
+  <div class="nlinks"><a href="#features">Features</a><a href="#compute">Shared Compute</a><a href="#start">Quickstart</a><a href="#roadmap">Roadmap</a><a href="#license">License</a></div>
+</div></nav>
+
+<div class="wrap">
+<header class="hero">
+  <div class="pill"><b>● v0.2-alpha live</b> &nbsp;·&nbsp; rooms + presence + shared compute farm</div>
+  <h1>Blender, but <span>multiplayer.</span></h1>
+  <p class="sub">Google-Docs-style live editing for <kbd>.blend</kbd> — move a cube and it moves on every machine — plus a <b style="color:#fff">same-session render &amp; bake farm</b> that borrows your teammates' PCs. Self-hosted, open-source, no cloud required.</p>
+  <div class="cta">
+    <a class="btn pri" href="#start">Get started in 2 min</a>
+    <a class="btn" href="#compute">See Shared Compute</a>
+  </div>
+  <div class="stats">
+    <div class="stat"><b>10 Hz</b>transform sync</div>
+    <div class="stat"><b>2–10</b>artists / room today</div>
+    <div class="stat"><b>3</b>farm modes: frames · tiles · bake</div>
+    <div class="stat"><b>1 cmd</b>self-host</div>
+  </div>
+
+  <div class="mock">
+    <div class="mockbar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="mut" style="font-size:13px;margin-left:8px">Kiln — demo · 3 sharers · seq 1,204</span><span style="margin-left:auto;display:flex;align-items:center;gap:8px;font-size:13px;color:var(--grn)"><span class="livedot"></span>LIVE</span></div>
+    <div class="mockbody">
+      <div class="side">👤 <b style="color:#fff">anand</b> <span style="color:#e04f5e">●</span><br>👤 bob <span style="color:#3fa9f5">●</span><br>👤 mei <span style="color:#3fb950">●</span><br><br>🔒 Cube <i>— anand</i><br>💬 “bevel this?”<br>📸 snapshot 1,190</div>
+      <div class="view">
+        <div class="row"><span class="avatar" style="background:#e04f5e">A</span> frames 1–4 · <div class="bar"><i style="width:72%"></i></div> 3/4</div>
+        <div class="row"><span class="avatar" style="background:#3fa9f5">B</span> tile 2×2 f7 · <div class="bar"><i style="width:45%"></i></div> rendering</div>
+        <div class="row"><span class="avatar" style="background:#3fb950">M</span> bake physics · <div class="bar"><i style="width:100%"></i></div> done ✓</div>
+        <div class="mut" style="font-size:13px">Smart allocation: bake went to the 32-core box, tiles to GPU, frames split by load. Disconnects requeue automatically.</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section id="features">
+  <div class="kicker">Why Kiln</div><h2>Ops, not files.</h2>
+  <p class="mut">Blasting whole <kbd>.blend</kbd> files breaks. Kiln syncs ordered operations — low latency, replayable, mergeable.</p>
+  <div class="grid">
+    <div class="card"><span class="tag t-live">LIVE · v0.1</span><h3>🔴 Live object sync</h3><p>Transforms, add/remove, rename, parent — debounced to 10&nbsp;Hz per object. Stable <kbd>kiln_id</kbd> so renames don't fork. Echo suppression, LWW + sequence numbers.</p></div>
+    <div class="card"><span class="tag t-live">LIVE · v0.1</span><h3>👥 Rooms + presence</h3><p>Join <kbd>demo</kbd> as <kbd>anand</kbd>. See who's here, their selections, 3D cursors, viewport colors. Follow mode for reviews.</p></div>
+    <div class="card"><span class="tag t-live">LIVE · v0.1</span><h3>🔒 Soft locks</h3><p>Claim an object before a risky edit. Others get a red banner, not a silent overwrite. Auto-released on disconnect.</p></div>
+    <div class="card"><span class="tag t-live">LIVE · v0.1</span><h3>💬 Comments + 📸 snapshots</h3><p>Pin notes at the 3D cursor. Push a snapshot before chaos, pull to restore. Op log keeps last 10k for replay.</p></div>
+    <div class="card"><span class="tag t-live">LIVE · v0.1</span><h3>🛟 Friendly + debuggable</h3><p>1-2-3 connect flow, Test button with fixes, Troubleshooting box, Export Log bundle, <kbd>/debug/rooms</kbd> endpoints, headless probe script.</p></div>
+    <div class="card"><span class="tag t-farm">NEW · v0.2</span><h3>🖥️ Stdlib-only addon</h3><p>No pip hell inside Blender. Custom WebSocket client on stdlib, timer-pumped on the main thread. Blender 4.2 LTS+.</p></div>
+  </div>
+</section>
+
+<section id="compute">
+  <div class="kicker">Shared Compute · v0.2-alpha</div><h2>Your session <i>is</i> the farm.</h2>
+  <p class="mut">Same-session only — no accounts, no uploads. Workers already hold the scene via live sync, so jobs send <b style="color:#fff">params, not .blends</b>. Toggle sharing, submit, watch it fan out.</p>
+  <div class="grid">
+    <div class="card"><span class="tag t-farm">FARM</span><h3>🎞️ Frame farm</h3><p>Frames 1–100 → one task per frame. <kbd>Submit Frames</kbd>, idle sharers auto-claim, progress bars per worker color. Timeouts + disconnects requeue seamlessly.</p></div>
+    <div class="card"><span class="tag t-farm">FARM</span><h3>🧩 Tile farm</h3><p>One hero frame → 2×2…5×5 tiles with border padding. GPU boxes grab tiles, CPU boxes grab frames. Composited in v0.3 blob store.</p></div>
+    <div class="card"><span class="tag t-farm">FARM</span><h3>🔥 Bake offload</h3><p>Physics / geometry-nodes bake → single task routed to the beefiest sharer by score. Result returns as a snapshot push.</p></div>
+  </div>
+  <div class="code"><span class="c"># smart allocation — deterministic, testable</span><br>score = 10·cpu + 20·gpu + 5·mem/8 − 30·load − rtt/50<br><span class="c"># −1000 veto: not sharing · stale &gt;30s · Blender version mismatch</span><br><span class="g">bake → max score only · frames/tiles → best waiting task per claim</span></div>
+  <p class="mut" style="margin-top:12px">Safety: room members only. v0.2 artifacts are checksums (scheduling proven); real EXR/PNG + Docker sandbox land in v0.3/v1.0. Don't farm with strangers yet.</p>
+</section>
+
+<section id="start">
+  <div class="kicker">Quickstart</div><h2>Live in 2 minutes.</h2>
+  <div class="cols">
+    <div class="card"><h3>1 · Run the server</h3><div class="code">pip install -e ./server<br>kiln-server --port 8000<br><span class="g"># → http://127.0.0.1:8000/healthz {"ok":true}</span><br><br><span class="c"># or</span><br>docker compose up --build</div></div>
+    <div class="card"><h3>2 · Join from Blender 4.2+</h3><p class="mut">Zip <kbd>addon/kiln</kbd> → Preferences → Install from Disk → enable Kiln. Sidebar (N) → Kiln → Server <kbd>ws://127.0.0.1:8000</kbd>, Room <kbd>demo</kbd>, different Name per PC → <b style="color:#fff">Connect</b>. Move a cube. Second Blender follows.</p><div class="code">Test → <span class="g">Server OK (25ms)</span><br>Share my CPU/GPU → <span class="g">ON</span><br>Submit Frames 1-4 → <span class="g">3/4 done</span></div></div>
+  </div>
+</section>
+
+<section id="roadmap">
+  <div class="kicker">Where we're headed</div><h2>Roadmap.</h2>
+  <div class="timeline">
+    <div class="done"><span class="tl-dot"></span><b>v0.1 — Live editing ✓</b><br><span class="mut">Rooms, presence, locks, comments, snapshots, op replay, debug endpoints, Export Log. 22 tests green.</span></div>
+    <div class="done"><span class="tl-dot"></span><b>v0.2 — Shared Compute (now) ✓</b><br><span class="mut">Frame/tile/bake farm, smart allocation, seamless auto-claim, requeue on dropout. Simulated artifacts; real pixels next.</span></div>
+    <div><span class="tl-dot"></span><b>v0.3 — Real pixels + branches</b><br><span class="mut">Blob store (EXR/PNG tiles composited), per-vertex mesh deltas, undo coalescing, branches/diff/3-way merge, OIDC accounts.</span></div>
+    <div><span class="tl-dot"></span><b>v1.0 — Scale + trust</b><br><span class="mut">50-user rooms (Redis pub/sub), CRDT sculpt, WebRTC voice, E2EE rooms, S3 snapshots, Docker/Firecracker sandbox for open farms.</span></div>
+  </div>
+</section>
+
+<section id="license">
+  <div class="kicker">Open source</div><h2>Dual-licensed, Blender-safe.</h2>
+  <div class="grid">
+    <div class="card"><h3>🧩 addon/ → GPL-3.0-or-later</h3><p>Required: <kbd>import bpy</kbd> is a Blender derivative. See <kbd>LICENSE-ADDON</kbd>.</p></div>
+    <div class="card"><h3>⚙️ server/ + protocol/ → Apache-2.0</h3><p>Studio-friendly self-host + patent grant. See <kbd>LICENSE-SERVER</kbd>. Mapping in <kbd>NOTICE</kbd>.</p></div>
+  </div>
+  <p class="mut">Contributing: <kbd>pytest server/tests addon/tests</kbd> must stay green. Protocol change → SPEC + schema + tests in the same PR.</p>
+</section>
+</div>
+
+<footer><div class="wrap">🔥 <b style="color:#fff">Kiln</b> — fire your scenes together. &nbsp;·&nbsp; Self-host in 1 command &nbsp;·&nbsp; <a href="#start">Quickstart</a> · <a href="#roadmap">Roadmap</a></div></footer>
+</body>
+</html>
